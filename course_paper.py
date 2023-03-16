@@ -79,20 +79,7 @@ def filter_obj():
     print(table)
 
 
-def weight_sort():
-    pass
-
-
-def distance_sort():
-    pass
-
-
-def constellation_sort():
-    pass
-
-
-def name_sort():
-    name = list(star_dict.keys())
+def sorting_selection():
     while True:
         par_sort = input("Сортировать по возрастанию или убыванию? (+/-): ")
         if par_sort in ["+", "-"]:
@@ -103,7 +90,58 @@ def name_sort():
         par_sort = False
     else:
         par_sort = True
-    name.sort(reverse=par_sort)
+    return par_sort
+
+
+def weight_sort():
+    par_sort = sorting_selection
+    keys = list(star_dict.keys())
+    part_star_dict = {}
+    for i in keys:
+        part_star_dict[i] = star_dict[i].weight
+
+    sorted_dict = {}
+    sorted_keys = sorted(part_star_dict, key=part_star_dict.get, reverse=par_sort())
+
+    for w in sorted_keys:
+        sorted_dict[w] = part_star_dict[w]
+    list_obj(list(sorted_dict.keys()))
+
+
+def distance_sort():
+    par_sort = sorting_selection
+    keys = list(star_dict.keys())
+    part_star_dict = {}
+    for i in keys:
+        part_star_dict[i] = star_dict[i].distance
+
+    sorted_dict = {}
+    sorted_keys = sorted(part_star_dict, key=part_star_dict.get, reverse=par_sort())
+
+    for w in sorted_keys:
+        sorted_dict[w] = part_star_dict[w]
+    list_obj(list(sorted_dict.keys()))
+
+
+def constellation_sort():
+    par_sort = sorting_selection
+    keys = list(star_dict.keys())
+    part_star_dict = {}
+    for i in keys:
+        part_star_dict[i] = star_dict[i].constellation
+
+    sorted_dict = {}
+    sorted_keys = sorted(part_star_dict, key=part_star_dict.get, reverse=par_sort())
+
+    for w in sorted_keys:
+        sorted_dict[w] = part_star_dict[w]
+    list_obj(list(sorted_dict.keys()))
+
+
+def name_sort():
+    name = list(star_dict.keys())
+    par_sort = sorting_selection
+    name.sort(reverse=par_sort())
     list_obj(name)
 
 
@@ -112,8 +150,8 @@ def sort_obj():
         try:
             par_sort = input("Выберите параметр сортировки (название/созвездие/расстояние/масса): ")
             dict_sort = {"название": name_sort, "созвездие": constellation_sort,
-                         "расстояние": distance_sort(), "масса": weight_sort()}
-            dict_sort[par_sort]()
+                         "расстояние": distance_sort, "масса": weight_sort}
+            dict_sort[par_sort.split(" ")[0]]()
             break
         except KeyError:
             print("Нет такого параметра!")
@@ -161,9 +199,6 @@ def add_obj():
               "Название звезды и созвездия не должно превышать 20 символов!")
         while True:
             name_star = input("Введите название звезды: ")
-            if len(name_star) > 20:
-                print("Название не должно превышать 20 символов!")
-                continue
             if input(f"Звезда называется \"{name_star}\"? (д/н) ").lower() in ["д", "", "да"]:
                 break
         while True:
@@ -200,7 +235,7 @@ def executing_the_command():
     try:
         commands = {"выход": close_console, "добавить": add_obj, "удалить": del_obj, "список": list_obj,
                     "сортировать": sort_obj, "фильтр": filter_obj, "перевод в парсеки": convert_obj}
-        commands[command]()
+        commands[command.split(" ")[0]]()
     except KeyError:
         print("Такой команды не существует!")
 
