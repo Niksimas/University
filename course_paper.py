@@ -160,7 +160,6 @@ def list_obj(name: list = None):
 
 
 def del_obj():
-    print("Вы вошли в режим удаления небесных тел.\n")
     key = star_dict.keys()
     print("Звезды которые можно удалить:  ")
     for i in key:
@@ -177,9 +176,7 @@ def del_obj():
 
 
 def add_obj():
-    if len(star_dict) + 1 < 12:
-        print("Вы вошли в режим добавление нового небесного тела. "
-              "Название звезды и созвездия не должно превышать 20 символов!")
+    if len(star_dict) < 12:
         while True:
             name_star = input("Введите название звезды: ")
             if input(f"Звезда называется \"{name_star}\"? (д/н) ").lower() in ["д", "", "да"]:
