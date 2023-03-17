@@ -1,38 +1,33 @@
-import subprocess
-import sys
-
 try:
     from prettytable import PrettyTable
 except ModuleNotFoundError:
+    import subprocess
+    import sys
     package = 'PrettyTable'
     print(f"Внимание! Будет установлен недостающий модуль \"{package}\"")
     subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
 
 
-class Star:
-    def __init__(self, constellation, distance, weight):
-        self.constellation = constellation
-        self.distance = distance
-        self.weight = weight
+th = ["№", "Название", "Созвездие", "Расстояние от Солнца (в св.г.)", "Масса (в массах Солнца)"]
 
-
-th = ["Название", "Созвездие", "Расстояние от Солнца (в св.г.)", "Масса (в массах Солнца)"]
-
-star_dict = {"Сириус": Star("Большой Пёс", 9, 2), "Поллукс": Star("Близнецы", 34, 2), "Арктур": Star("Волопас", 37, 1),
-             "Антарес": Star("Скорпион", 550, 13), "Бетельгейзе": Star("Орион", 548, 19)}
+star_dict = {"Сириус": ("Большой Пёс", 9, 2), "Поллукс": ("Близнецы", 34, 2), "Альнитак": ("Орион", 817, 4),
+             "Антарес": ("Скорпион", 550, 13), "Проксима Центавра": ("Альфа Центавра", 4, 7)}
 
 
 def convert_obj():
     """Вывод расстояния до всех звезд в парсеках вместо световых лет"""
-    th1 = ["Название", "Созвездие", "Расстояние от Солнца (в парсеках)", "Масса (в массах Солнца)"]
+    th1 = ["№", "Название", "Созвездие", "Расстояние от Солнца (в парсеках)", "Масса (в массах Солнца)"]
     columns = len(th1)
     table = PrettyTable(th1)
     td_data = []
+    number = 1
     for i in star_dict:
+        td_data.append(number)
         td_data.append(i)
-        td_data.append(star_dict[i].constellation)
-        td_data.append(round(star_dict[i].distance * 0.306, 2))
-        td_data.append(star_dict[i].weight)
+        td_data.append(star_dict[i][0])
+        td_data.append(round(star_dict[i][1] * 0.306, 2))
+        td_data.append(star_dict[i][2])
+        number += 1
     while td_data:
         table.add_row(td_data[:columns])
         td_data = td_data[columns:]
@@ -44,6 +39,7 @@ def filter_obj():
     columns = len(th)
     table = PrettyTable(th)
     td_data = []
+    number = 1
     while True:
         try:
             weight_user = int(input("Задайте фильтр по массе (целое число): "))
@@ -51,11 +47,13 @@ def filter_obj():
         except ValueError:
             print("Данные не являются целым числом. Попробуйте ещё раз.")
     for i in star_dict:
-        if star_dict[i].weight <= weight_user:
+        if star_dict[i][2] <= weight_user:
+            td_data.append(number)
             td_data.append(i)
-            td_data.append(star_dict[i].constellation)
-            td_data.append(star_dict[i].distance)
-            td_data.append(star_dict[i].weight)
+            td_data.append(star_dict[i][0])
+            td_data.append(star_dict[i][1])
+            td_data.append(star_dict[i][2])
+            number += 1
     while td_data:
         table.add_row(td_data[:columns])
         td_data = td_data[columns:]
@@ -63,6 +61,7 @@ def filter_obj():
 
 
 def sorting_selection():
+    """Выбор сортировки"""
     while True:
         par_sort = input("Сортировать по возрастанию или убыванию? (+/-): ")
         if par_sort in ["+", "-"]:
@@ -77,45 +76,42 @@ def sorting_selection():
 
 
 def weight_sort():
+    """Сортировка списка по массе"""
     par_sort = sorting_selection
     keys = list(star_dict.keys())
     part_star_dict = {}
     for i in keys:
-        part_star_dict[i] = star_dict[i].weight
-
+        part_star_dict[i] = star_dict[i][2]
     sorted_dict = {}
     sorted_keys = sorted(part_star_dict, key=part_star_dict.get, reverse=par_sort())
-
     for w in sorted_keys:
         sorted_dict[w] = part_star_dict[w]
     list_obj(list(sorted_dict.keys()))
 
 
 def distance_sort():
+    """Сортировка списка по расстоянию"""
     par_sort = sorting_selection
     keys = list(star_dict.keys())
     part_star_dict = {}
     for i in keys:
-        part_star_dict[i] = star_dict[i].distance
-
+        part_star_dict[i] = star_dict[i][1]
     sorted_dict = {}
     sorted_keys = sorted(part_star_dict, key=part_star_dict.get, reverse=par_sort())
-
     for w in sorted_keys:
         sorted_dict[w] = part_star_dict[w]
     list_obj(list(sorted_dict.keys()))
 
 
 def constellation_sort():
+    """Сортировка списка по созвездию"""
     par_sort = sorting_selection
     keys = list(star_dict.keys())
     part_star_dict = {}
     for i in keys:
-        part_star_dict[i] = star_dict[i].constellation
-
+        part_star_dict[i] = star_dict[i][0]
     sorted_dict = {}
     sorted_keys = sorted(part_star_dict, key=part_star_dict.get, reverse=par_sort())
-
     for w in sorted_keys:
         sorted_dict[w] = part_star_dict[w]
     list_obj(list(sorted_dict.keys()))
@@ -144,15 +140,18 @@ def list_obj(name: list = None):
     columns = len(th)
     table = PrettyTable(th)
     td_data = []
+    number = 1
     if name is None:
         key = star_dict
     else:
         key = name
     for i in key:
+        td_data.append(number)
         td_data.append(i)
-        td_data.append(star_dict[i].constellation)
-        td_data.append(star_dict[i].distance)
-        td_data.append(star_dict[i].weight)
+        td_data.append(star_dict[i][0])
+        td_data.append(star_dict[i][1])
+        td_data.append(star_dict[i][2])
+        number += 1
     while td_data:
         table.add_row(td_data[:columns])
         td_data = td_data[columns:]
@@ -160,11 +159,12 @@ def list_obj(name: list = None):
 
 
 def del_obj():
-    key = star_dict.keys()
+    key = list(star_dict.keys())
     print("Звезды которые можно удалить:  ")
-    for i in key:
-        print(f"{i}", end="  ")
-    print()
+    print(f"--|{key[0]}|", end="--")
+    for i in range(1, len(key)-1):
+        print(f"|{key[i]}|", end="--")
+    print(f"|{key[-1]}|", end="--\n")
     while True:
         deleted = input("Выберите какую звезду будем удалять: ")
         try:
@@ -199,7 +199,7 @@ def add_obj():
                     break
             except ValueError:
                 print("Данные не являются целым числом. Попробуйте ещё раз.")
-        star_dict[name_star] = Star(name_constellation, distance, weight)
+        star_dict[name_star] = (name_constellation, distance, weight)
         print(f"Создан новый объект:\nЗвезда: {name_star}\nСозвездие: {name_constellation}\n"
               f"Расстояние от Солнца (в св. годах): {distance}\nМасса (в массах Солнца): {weight}")
     else:
@@ -215,7 +215,7 @@ def executing_the_command():
     try:
         commands = {"выход": close_console, "добавить": add_obj, "удалить": del_obj, "список": list_obj,
                     "сортировать": sort_obj, "фильтр": filter_obj, "перевод": convert_obj}
-        commands[command.split(" ")[0]]()
+        commands[command.lower().split(" ")[0]]()
     except KeyError:
         print("Такой команды не существует!")
 
