@@ -1,12 +1,16 @@
-def nfib(x):
-    fib_num = [0, 1, 1]
-    for i in range(2, x+1):
-        fib_num.append(fib_num[i - 1] + fib_num[i])
-    if x in fib_num:
-        result = fib_num.index(x)
-    else:
-        result = -1
-    return result
+def triangle(N, S):
+    s=1
+    for k in range(N):
+        for l in range(s):
+            print(S, end="")
+        print()
+        s+=1
+            
 
-for i in range(25):
-    print("%2d: %2d" % (i, nfib(i)))
+triangle(1, "*")
+print()
+triangle(2, "+")
+print()
+triangle(3, "%")
+print()
+triangle(4, "!")
