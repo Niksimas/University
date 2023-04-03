@@ -8,7 +8,7 @@ except ModuleNotFoundError:
     subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
 
 
-th = ["№", "Название", "Созвездие", "Расстояние от Солнца (в св.г.)", "Масса (в массах Солнца)"]
+th = ["№", "Название", "Созвездие", "Путь от Солнца (в св.г.)", "Масса (в мас. Сол.)"]
 
 star_dict = {"Сириус": ("Большой Пёс", 9, 2), "Поллукс": ("Близнецы", 34, 2), "Альнитак": ("Орион", 817, 4),
              "Антарес": ("Скорпион", 550, 13), "Проксима Центавра": ("Альфа Центавра", 4, 7)}
@@ -16,7 +16,7 @@ star_dict = {"Сириус": ("Большой Пёс", 9, 2), "Поллукс": 
 
 def convert_obj():
     """Вывод расстояния до всех звезд в парсеках вместо световых лет"""
-    th1 = ["№", "Название", "Созвездие", "Расстояние от Солнца (в парсеках)", "Масса (в массах Солнца)"]
+    th1 = ["№", "Название", "Созвездие", "Путь от Солнца (в парсеках)", "Масса (в мас. Сол.)"]
     columns = len(th1)
     table = PrettyTable(th1)
     td_data = []
@@ -136,15 +136,15 @@ def sort_obj():
             print("Нет такого параметра!")
 
 
-def list_obj(name: list = None):
+def list_obj(sort_key: list = None):
     columns = len(th)
     table = PrettyTable(th)
     td_data = []
     number = 1
-    if name is None:
+    if sort_key is None:
         key = star_dict
     else:
-        key = name
+        key = sort_key
     for i in key:
         td_data.append(number)
         td_data.append(i)
@@ -166,7 +166,7 @@ def del_obj():
         print(f"|{key[i]}|", end="--")
     print(f"|{key[-1]}|", end="--\n")
     while True:
-        deleted = input("Выберите какую звезду будем удалять: ")
+        deleted = input("\nВыберите какую звезду будем удалять (ввести название учитывая регистр): ")
         try:
             del star_dict[deleted]
             print("Звезда успешно удалена")
@@ -176,48 +176,71 @@ def del_obj():
 
 
 def add_obj():
-    if len(star_dict) < 12:
-        while True:
-            name_star = input("Введите название звезды: ")
-            if input(f"Звезда называется \"{name_star}\"? (д/н) ").lower() in ["д", "", "да"]:
-                break
-        while True:
-            name_constellation = input("Введите название созвездия: ")
-            if input(f"Звезда находится в созвездии \"{name_constellation}\"? (д/н) ").lower() in ["д", "", "да"]:
-                break
-        while True:
-            try:
-                distance = int(input("Введите расстояние в световых годах (округлите до целого числа): "))
-                if input(f"От Солнца до {name_star} {distance} св. лет(года)? (д/н) ").lower() in ["д", "", "да"]:
+    while True:
+        if len(star_dict) < 12:
+            while True:
+                name_star = input("Введите название звезды: ")
+                if name_star not in [i * " " for i in range(10)]:
                     break
-            except ValueError:
-                print("Данные не являются целым числом. Попробуйте ещё раз.")
-        while True:
-            try:
-                weight = int(input("Введите массу в массах Солнца (округлите до целого числа): "))
-                if input(f"Масса {name_star} {weight} масс Солнца? (д/н) ").lower() in ["д", "", "да"]:
+                else:
+                    print("Название не может быть пустым!")
+            while True:
+                name_constellation = input("Введите название созвездия: ")
+                if name_constellation not in [i * " " for i in range(10)]:
                     break
-            except ValueError:
-                print("Данные не являются целым числом. Попробуйте ещё раз.")
-        star_dict[name_star] = (name_constellation, distance, weight)
-        print(f"Создан новый объект:\nЗвезда: {name_star}\nСозвездие: {name_constellation}\n"
-              f"Расстояние от Солнца (в св. годах): {distance}\nМасса (в массах Солнца): {weight}")
-    else:
-        print("Невозможно добавить новый объект!\nУдалите один объект, чтобы добавить новый.")
+                else:
+                    print("Название не может быть пустым!")
+            while True:
+                try:
+                    distance = int(input("Введите расстояние в световых годах (округлите до целого числа): "))
+                    break
+                except ValueError:
+                    print("Данные не являются целым числом. Попробуйте ещё раз.")
+            while True:
+                try:
+                    weight = int(input("Введите массу в массах Солнца (округлите до целого числа): "))
+                    break
+                except ValueError:
+                    print("Данные не являются целым числом. Попробуйте ещё раз.")
+            print(f"\nБудет создан новый объект:\nЗвезда: {name_star}\nСозвездие: {name_constellation}\n"
+                  f"Расстояние от Солнца (в св. годах): {distance}\nМасса (в массах Солнца): {weight}")
+            while True:
+                confirmation = input("Верны ли введеные данные? (д/н)")
+                if confirmation == "д":
+                    star_dict[name_star] = (name_constellation, distance, weight)
+                    print(f"\nНовый объект добавлен!")
+                    break
+                elif confirmation != ["д", "н"]:
+                    print(f"Неизвестный ответ. Попробуйте ещё раз.")
+            break
+        else:
+            print("\nНевозможно добавить новый объект!\nУдалите один объект, чтобы добавить новый.")
+            break
 
 
 def close_console():
     """Закрытие программы"""
+    print("\nПрограмма закрыта!")
     exit(1)
 
 
-def executing_the_command():
+def help_commands():
+    """Выдача всех команд"""
+    print("\nСписок возможных команд:\nдобавить - добавление звезды\n"
+          "удалить - удаление выбранной звезды\nсписок - вывод всех звезд в виде таблицы\n"
+          "сортировать - сортировка звезд по выбранному параметру\n"
+          "фильтр - вывод всех звезд, у которых масса не превосходит заданной величины\n"
+          "перевод - вывод расстояния от Солнца до звезд в парсеках\n"
+          "помощь - вывод возможных команд\nвыход - выход из программы\n")
+
+
+def executing_the_command(request):
     try:
         commands = {"выход": close_console, "добавить": add_obj, "удалить": del_obj, "список": list_obj,
-                    "сортировать": sort_obj, "фильтр": filter_obj, "перевод": convert_obj}
-        commands[command.lower().split(" ")[0]]()
+                    "сортировать": sort_obj, "фильтр": filter_obj, "перевод": convert_obj, "помощь": help_commands}
+        commands[request.lower().split(" ")[0]]()
     except KeyError:
-        print("Такой команды не существует!")
+        print("\nТакой команды не существует!")
 
 
 if __name__ == "__main__":
@@ -225,7 +248,8 @@ if __name__ == "__main__":
           "удалить - удаление выбранной звезды\nсписок - вывод всех звезд в виде таблицы\n"
           "сортировать - сортировка звезд по выбранному параметру\n"
           "фильтр - вывод всех звезд, у которых масса не превосходит заданной величины\n"
-          "перевод - вывод расстояния от Солнца до звезд в парсеках\nвыход - выход из программы\n")
+          "перевод - вывод расстояния от Солнца до звезд в парсеках\n"
+          "помощь - вывод возможных команд\nвыход - выход из программы\n")
     while True:
-        command = input("Введите команду: ")
-        executing_the_command()
+        command = input("\nВведите команду: ")
+        executing_the_command(command)
